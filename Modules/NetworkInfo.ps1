@@ -12,10 +12,12 @@
 
 $networkInfo =[PSCustomObject]@{
             AdapterName = $null
+            AdapterTest = $null
             Status = $null
             MacAddress = $null
             InterfaceIndex = $null
             IPv4 = $null
+            IPv4Test = $null
             Gateway = $null
             GatewayTest = $null
             DHCP = $null
@@ -28,9 +30,11 @@ $networkInfo =[PSCustomObject]@{
 
 $activeAdapter = Get-NetAdapter | Where-Object Status -eq "Up" 
 
-if($null -eq $activeAdapter){ 
+if($null -eq $activeAdapter){
+    $networkInfo.AdapterTest = "FAIL"
 }else{
         $networkInfo.AdapterName = $activeAdapter.Name
+        $networkInfo.AdapterTest = "PASS"
         $networkInfo.Status = $activeAdapter.Status
         $networkInfo.MacAddress = $activeAdapter.MacAddress
         $networkInfo.InterfaceIndex = $activeAdapter.InterfaceIndex
@@ -42,9 +46,10 @@ if($null -eq $activeAdapter){
             }
 
         if($null -eq $ipAddress) {
-            $networkInfo.IPv4 = $null
+            $networkInfo.IPv4Test = "FAIL"
         }else{
             $networkInfo.IPv4 = $ipAddress.IPAddress
+            $networkInfo.IPv4Test = "PASS"
         }
         
         $getGateway = Get-NetRoute -AddressFamily IPv4 |
@@ -99,7 +104,7 @@ if($null -eq $activeAdapter){
 
 }
 
-if (($networkInfo.Status -eq "Up") -and 
+if (($networkInfo.AdapterTest -eq "PASS") -and 
     ($null -ne $networkInfo.IPv4) -and 
     ($networkInfo.GatewayTest -eq $True) -and 
     ($networkInfo.DNSResolution -eq "PASS") -and
