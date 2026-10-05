@@ -1,0 +1,17 @@
+# Visual Studio Code
+.vscode/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+
+# Secrets
+.env
+*.secret
+secrets.txt
+
+# Windows
+Thumbs.db
+Desktop.ini
