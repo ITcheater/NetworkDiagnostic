@@ -28,7 +28,13 @@ $networkInfo =[PSCustomObject]@{
             OverallStatus = $null           
             }
 
-$activeAdapter = Get-NetAdapter | Where-Object Status -eq "Up" 
+$defaultRoute = Get-NetRoute -AddressFamily IPv4 |
+    Where-Object DestinationPrefix -eq "0.0.0.0/0"
+
+$activeAdapter = Get-NetAdapter |
+    Where-Object InterfaceIndex -eq $defaultRoute.InterfaceIndex
+            
+# $activeAdapter = Get-NetAdapter | Where-Object Status -eq "Up" 
 
 if($null -eq $activeAdapter){
     $networkInfo.AdapterTest = "FAIL"
