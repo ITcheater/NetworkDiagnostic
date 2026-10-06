@@ -31,11 +31,16 @@ $networkInfo =[PSCustomObject]@{
 $defaultRoute = Get-NetRoute -AddressFamily IPv4 |
     Where-Object DestinationPrefix -eq "0.0.0.0/0"
 
-$activeAdapter = Get-NetAdapter |
-    Where-Object InterfaceIndex -eq $defaultRoute.InterfaceIndex
-            
-# $activeAdapter = Get-NetAdapter | Where-Object Status -eq "Up" 
+$activeAdapter = $null
 
+if($null -eq $defaultRoute){
+
+}else {
+    $activeAdapter = Get-NetAdapter |
+        Where-Object InterfaceIndex -eq $defaultRoute.InterfaceIndex
+}
+
+            
 if($null -eq $activeAdapter){
     $networkInfo.AdapterTest = "FAIL"
     $networkInfo.IPv4Test = "NOT TESTED"
@@ -64,11 +69,7 @@ if($null -eq $activeAdapter){
             $networkInfo.IPv4 = $ipAddress.IPAddress
             $networkInfo.IPv4Test = "PASS"
 
-            $getGateway = Get-NetRoute -AddressFamily IPv4 |
-            Where-Object {
-                $_.DestinationPrefix -eq "0.0.0.0/0" -and 
-                $_.InterfaceIndex -eq $activeAdapter.InterfaceIndex
-            } 
+            $getGateway = $defaultRoute 
                 
             if($null -eq $getGateway){
                 $networkInfo.Gateway = $null
@@ -82,10 +83,10 @@ if($null -eq $activeAdapter){
                 if($gatewayTest){
                     $networkInfo.GatewayTest = "PASS"
                     $getDNS = Get-DnsClientServerAddress |
-                    Where-Object {
-                        $_.InterfaceIndex -eq $activeAdapter.InterfaceIndex -and
-                        $_.AddressFamily -eq "2"
-                    }
+                        Where-Object {
+                            $_.InterfaceIndex -eq $activeAdapter.InterfaceIndex -and
+                            $_.AddressFamily -eq "2"
+                        }
 
                     if($null -eq $getDNS){
                         $networkInfo.DNS = $null
