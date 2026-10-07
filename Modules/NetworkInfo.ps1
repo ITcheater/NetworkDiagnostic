@@ -31,13 +31,22 @@ $networkInfo =[PSCustomObject]@{
 $defaultRoute = Get-NetRoute -AddressFamily IPv4 |
     Where-Object DestinationPrefix -eq "0.0.0.0/0"
 
+$connectedInterface = Get-NetIPInterface -AddressFamily IPv4 | 
+    Where-Object ConnectionState -eq "Connected"
+
 $activeAdapter = $null
+$activeInterface = $null
 
 if($null -eq $defaultRoute){
 
 }else {
-    $activeAdapter = Get-NetAdapter |
-        Where-Object InterfaceIndex -eq $defaultRoute.InterfaceIndex
+    $activeInterface = $connectedInterface |
+        Where-Object InterfaceIndex -in $defaultRoute.InterfaceIndex
+
+    if($null -ne $activeInterface){
+        $activeAdapter = Get-NetAdapter |
+            Where-Object InterfaceIndex -eq $activeInterface.InterfaceIndex
+    }
 }
 
             
@@ -69,7 +78,8 @@ if($null -eq $activeAdapter){
             $networkInfo.IPv4 = $ipAddress.IPAddress
             $networkInfo.IPv4Test = "PASS"
 
-            $getGateway = $defaultRoute 
+            $getGateway = $defaultRoute |
+                Where-Object InterfaceIndex -eq $activeAdapter.InterfaceIndex
                 
             if($null -eq $getGateway){
                 $networkInfo.Gateway = $null
