@@ -7,11 +7,8 @@ if (-not (Test-Path $reportFolder)) {
     New-Item -Path $reportFolder -ItemType Directory
 }
 
-$reportPath = Join-Path $reportFolder "NetworkDiagnostic.txt"
-
-if (-not (Test-Path $reportPath)) {
-    New-Item -Path $reportPath -ItemType File
-}
+$reportPath = Join-Path $reportFolder "NetworkDiagnostic.txt" 
+$reportPathJson = Join-Path $reportFolder "NetworkDiagnostic.json" 
 
 $report = @(
 "========================================"
@@ -49,4 +46,13 @@ $report = @(
 ""
 )
 
+$reportJson=[PSCustomObject]@{
+    UserInfo       = $userInfo
+    Network        = $networkInfo
+    Connectivity   = $connectivity
+}
+
+$jsonContent = $reportJson | ConvertTo-Json -Depth 3
+
 Set-Content -Path $reportPath -Value $report
+Set-Content -Path $reportPathJson -Value $jsonContent

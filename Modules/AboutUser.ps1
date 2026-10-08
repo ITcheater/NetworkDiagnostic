@@ -18,4 +18,3 @@ $userInfo.ComputerName = $computerName
 $userInfo.User = $computerUser
 $userInfo.Date = $currentDate
 $userInfo.Windows = $currentMSVersion
-

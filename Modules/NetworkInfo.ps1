@@ -2,14 +2,6 @@
 # 2. NETWORK INFORMATION
 # ==========================================
 
-# Get-NetAdapter               -> Adapter / MAC / Status
-# Get-NetIPAddress             -> IPv4
-# Get-NetRoute                 -> Gateway
-# Get-NetIPInterface           -> DHCP
-# Get-DnsClientServerAddress   -> DNS
-# Resolve-DnsName              -> Dns Resolution
-
-
 $networkInfo =[PSCustomObject]@{
             AdapterName = $null
             Status = $null
@@ -88,10 +80,4 @@ if($null -eq $activeAdapter){
         $networkInfo.DHCP = $getDHCP.DHCP
     }
                
-}
-                      
-
-
-
-
-
+}                 
